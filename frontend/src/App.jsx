@@ -199,7 +199,7 @@ export default function App() {
   // Health and data fetch functions
   const fetchHealth = useCallback(async () => {
     try {
-      const res = await fetch('/health');
+      const res = await fetch('https://powermind.onrender.com/health');
       if (res.ok) setHealthStatus('online');
       else setHealthStatus('offline');
     } catch {
@@ -209,7 +209,7 @@ export default function App() {
 
   const loadSampleScenario = useCallback(async () => {
     try {
-      const res = await fetch('/api/scenarios/sample');
+      const res = await fetch('https://powermind.onrender.com/api/scenarios/sample');
       if (res.ok) {
         const data = await res.json();
         setScenarioId(data.scenario_id);
@@ -224,7 +224,7 @@ export default function App() {
 
   const loadBenchmarkCases = useCallback(async () => {
     try {
-      const res = await fetch('/api/scenarios/cases');
+      const res = await fetch('https://powermind.onrender.com/api/scenarios/cases');
       if (res.ok) {
         const data = await res.json();
         setBenchmarkCases(data);
@@ -268,7 +268,7 @@ export default function App() {
     setChatLoading(true);
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await fetch('https://powermind.onrender.com/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -319,7 +319,7 @@ export default function App() {
     setErrorMsg(null);
     const startMs = Date.now();
     try {
-      const res = await fetch('/api/agent/prompt', {
+      const res = await fetch('https://powermind.onrender.com/api/agent/prompt', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -354,7 +354,7 @@ export default function App() {
     setTestingModel(true);
     setTestResult(null);
     try {
-      const res = await fetch('/api/test-llm', {
+      const res = await fetch('https://powermind.onrender.com/api/test-llm', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
