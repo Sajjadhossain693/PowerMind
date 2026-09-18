@@ -13,20 +13,69 @@ from app.llm.prompts import SYSTEM_PROMPT
 
 router = APIRouter()
 
+AVAILABLE_MODELS = {
+    "gemini": [
+        {"id": "gemini-2.5-flash", "name": "Gemini 2.5 Flash", "recommended": True, "description": "High intelligence & fast response"},
+        {"id": "gemini-2.5-pro", "name": "Gemini 2.5 Pro", "recommended": False, "description": "Maximum reasoning capability"},
+        {"id": "gemini-2.0-flash", "name": "Gemini 2.0 Flash", "recommended": False, "description": "Next-gen low latency"},
+        {"id": "gemini-1.5-flash", "name": "Gemini 1.5 Flash", "recommended": False, "description": "Balanced speed and efficiency"}
+    ],
+    "openai": [
+        {"id": "gpt-4o-mini", "name": "GPT-4o Mini", "recommended": True, "description": "Fast and lightweight"},
+        {"id": "gpt-4o", "name": "GPT-4o", "recommended": False, "description": "Flagship multi-modal model"},
+        {"id": "gpt-3.5-turbo", "name": "GPT-3.5 Turbo", "recommended": False, "description": "Legacy fast model"}
+    ],
+    "groq": [
+        {"id": "llama-3.3-70b-versatile", "name": "Llama 3.3 70B Versatile", "recommended": True, "description": "Ultra-fast inference"},
+        {"id": "llama-3.1-8b-instant", "name": "Llama 3.1 8B Instant", "recommended": False, "description": "Sub-100ms response time"},
+        {"id": "mixtral-8x7b-32768", "name": "Mixtral 8x7B", "recommended": False, "description": "MoE architecture"}
+    ],
+    "openrouter": [
+        {"id": "meta-llama/llama-3.3-70b-instruct", "name": "Llama 3.3 70B", "recommended": True, "description": "Open-weight flagship via OpenRouter"},
+        {"id": "anthropic/claude-3.5-sonnet", "name": "Claude 3.5 Sonnet", "recommended": False, "description": "Leading reasoning performance"},
+        {"id": "deepseek/deepseek-chat", "name": "DeepSeek V3", "recommended": False, "description": "High performance open model"}
+    ],
+    "mock": [
+        {"id": "local-trained-model", "name": "Local Trained ML Model (Offline)", "recommended": True, "description": "Zero external dependencies, trained on campus cases"},
+        {"id": "mock-deterministic", "name": "Deterministic Heuristic Engine", "recommended": False, "description": "Rule-based instant fallback"}
+    ]
+}
+
+@router.get("/api/models/available")
+async def get_available_models() -> Dict[str, Any]:
+    """Catalog of supported models and recommendations per provider."""
+    return AVAILABLE_MODELS
+
 @router.get("/health", response_model=HealthResponse)
 async def health_check() -> Dict[str, str]:
-    """Lightweight health endpoint conforming strictly to challenge specification."""
+    """Lightweight health endpoint."""
     return {"status": "ok"}
 
 @router.post("/optimize-energy", response_model=OptimizeEnergyResponse)
 async def optimize_energy_endpoint(request: OptimizeEnergyRequest) -> OptimizeEnergyResponse:
     """
-    Canonical Hackathon Endpoint:
+    Production Autonomous Energy Scheduling Endpoint:
     Receives 24h energy scenario + 1-3 operator notes.
     Interprets notes via LLM -> Validates -> Solves via OR-Tools -> Replays -> Returns schedule.
     """
     response, meta = await energy_service.optimize(request)
     return response
+
+@router.post("/api/agent/prompt")
+async def agent_prompt_endpoint(request: Dict[str, Any]) -> Dict[str, Any]:
+    """Executes natural language campus energy commands via the Inbuilt AI Agent."""
+    from app.agent import AgentPromptRequest, execute_agent_prompt
+    agent_req = AgentPromptRequest(**request)
+    result = await execute_agent_prompt(agent_req)
+    return result.model_dump()
+
+@router.post("/api/chat")
+async def chat_endpoint(request: Dict[str, Any]) -> Dict[str, Any]:
+    """Answers operator questions regarding campus energy schedules, tariffs, and directives."""
+    from app.chatbot import ChatRequest, handle_chat_query
+    chat_req = ChatRequest(**request)
+    result = await handle_chat_query(chat_req)
+    return result.model_dump()
 
 @router.post("/api/test-llm")
 async def test_llm_connection(config: LLMRuntimeConfig) -> Dict[str, Any]:
@@ -59,7 +108,7 @@ async def test_llm_connection(config: LLMRuntimeConfig) -> Dict[str, Any]:
 
 @router.get("/api/credits")
 async def get_team_credits() -> Dict[str, Any]:
-    """Official hackathon team credits."""
+    """PowerMind Core Engineering Team Credits."""
     return {
         "team": "PowerMind Core Engineering",
         "members": [
@@ -73,10 +122,6 @@ async def get_team_credits() -> Dict[str, Any]:
 @router.get("/api/scenarios/sample")
 async def get_sample_scenario() -> Dict[str, Any]:
     """Provides a realistic 24-hour university campus scenario."""
-    # Standard 24-hour university campus profile
-    # Solar peaks during midday (hours 9-16)
-    # Demand peaks in afternoon and evening (academic + residential halls)
-    # Tariff has peak hours (17-23)
     hours = []
     base_demands = [
         35.0, 30.0, 28.0, 28.0, 32.0, 45.0,
@@ -107,7 +152,7 @@ async def get_sample_scenario() -> Dict[str, Any]:
         })
 
     return {
-        "scenario_id": "bup_campus_summer_peak_01",
+        "scenario_id": "campus_summer_peak_01",
         "operator_notes": [
             "PV production will drop to about 20% between 13:00 and 15:00 due to scheduled rooftop array cleaning.",
             "Maintain an emergency battery reserve of at least 120 kWh from 6 PM to 9 PM during the guest convocation lecture.",

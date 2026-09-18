@@ -274,6 +274,43 @@ class OpenAICompatibleLLMClient(BaseLLMClient):
                 raise
             raise LLMClientError(f"LLM communication error: {str(e)}")
 
+class LocalTrainedLLMClient(BaseLLMClient):
+    """
+    Offline ML-trained interpreter using weights trained on the public dataset JSON.
+    Provides fast, deterministic, zero-latency offline performance without external API keys.
+    """
+    def __init__(self, model: str = "local-trained-model", api_key: str = "", timeout: float = 8.0):
+        super().__init__(model, api_key, timeout)
+        from app.llm.local_model import LocalTrainedModel
+        self.local_model = LocalTrainedModel()
+
+    async def generate(self, system_prompt: str, user_prompt: str) -> str:
+        notes: List[str] = []
+        try:
+            match = re.search(r"\[.*\]", user_prompt, re.DOTALL)
+            if match:
+                parsed = json.loads(match.group(0))
+                if isinstance(parsed, list):
+                    notes = [str(x) for x in parsed]
+        except Exception:
+            pass
+
+        if not notes:
+            for line in user_prompt.splitlines():
+                clean = line.strip()
+                if clean.startswith("-") or clean.startswith("*") or re.match(r"^\d+\.", clean):
+                    notes.append(re.sub(r"^[0-9*.\-\s]+", "", clean))
+
+        if not notes:
+            notes = [user_prompt]
+
+        output = []
+        for idx, note in enumerate(notes):
+            interpreted = self.local_model.interpret_note(idx, note)
+            output.append(interpreted)
+
+        return json.dumps(output, indent=2)
+
 def create_llm_client(
     provider: Optional[str] = None,
     model: Optional[str] = None,
@@ -287,8 +324,12 @@ def create_llm_client(
     k = (api_key if api_key is not None else settings.LLM_API_KEY).strip()
     t = timeout or settings.LLM_TIMEOUT_SECONDS
 
+    # Check for local trained model
+    if p in ("local", "trained", "offline") or m in ("local-trained-model", "local-ml-model"):
+        return LocalTrainedLLMClient(model="local-trained-model", api_key="", timeout=t)
+
     # If mock or no key provided for external, default to MockDeterministicLLMClient
-    if p == "mock" or not k:
+    if p == "mock" or not k or "your_" in k or "api_key_here" in k:
         return MockDeterministicLLMClient(model="mock-deterministic", api_key="", timeout=t)
 
     if p in ("gemini", "google"):
@@ -317,3 +358,4 @@ def create_llm_client(
 
     # Default to mock
     return MockDeterministicLLMClient(model="mock-deterministic", api_key="", timeout=t)
+

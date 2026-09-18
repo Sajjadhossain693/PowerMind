@@ -1,6 +1,6 @@
 """
 PowerMind — Smart Campus Energy Optimization Engine
-GridWise LLM Implementation for BUP CSE Fest 2026.
+Autonomous Energy Scheduling API & Dashboard.
 """
 
 __version__ = "1.0.0"
