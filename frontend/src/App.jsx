@@ -389,7 +389,7 @@ export default function App() {
         }
       };
 
-      const res = await fetch('/optimize-energy', {
+      const res = await fetch('https://powermind.onrender.com/optimize-energy', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
