@@ -21,7 +21,7 @@ def test_adversarial_distractor_notes():
     client = MockDeterministicLLMClient(model="mock-test")
     distractors = [
         "Staff lunch meeting in the cafeteria at noon.",
-        "Welcome all delegates to BUP CSE Fest 2026.",
+        "Welcome all delegates to the Campus Technology Summit 2026.",
         "The weather looks nice today, mild breeze across campus."
     ]
 
