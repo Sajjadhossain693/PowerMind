@@ -1,7 +1,7 @@
 # PowerMind: Technical Requirements Document (TRD)
 
 **System Architecture & Mathematical Optimization Specification**  
-**Project**: PowerMind (GridWise LLM) — BUP CSE Fest 2026 Hackathon  
+**Project**: PowerMind — Smart Campus Energy Optimization Engine  
 
 ---
 

@@ -1,7 +1,6 @@
 # PowerMind: Product Requirements Document (PRD)
 
 **Project Name**: PowerMind — Smart Campus Energy Optimization Engine  
-**Competition**: BUP CSE Fest 2026 — Preliminary Hackathon (GridWise LLM Track)  
 **System Type**: Agentic Energy Optimization REST API & Dashboard  
 **Status**: Production-Ready  
 
@@ -20,7 +19,7 @@ The LLM is strictly constrained to interpreting operator notes into canonical di
 
 ## 2. Team Credits
 
-PowerMind was designed and engineered for the BUP CSE Fest 2026 Preliminary Hackathon by:
+PowerMind was designed and engineered by:
 
 - **Pritam Biswas** — [GitHub: pbs002-s](https://github.com/pbs002-s)  
   *Core Architect & Backend Lead*

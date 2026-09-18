@@ -1,9 +1,8 @@
 # PowerMind — Smart Campus Energy Optimization Engine
 
-> **BUP CSE Fest 2026 — Preliminary Hackathon (GridWise LLM Track)**  
-> Production-Ready Autonomous Energy Scheduling API & Dashboard
+> Production-Grade Autonomous Energy Scheduling API & Optimization Dashboard
 
-[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12-blue.svg)](https://python.org)
+[![Python](https://img.shields.io/badge/Python-3.11%20%7C%203.12%20%7C%203.13-blue.svg)](https://python.org)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.110+-009688.svg)](https://fastapi.tiangolo.com)
 [![OR-Tools](https://img.shields.io/badge/Google%20OR--Tools-MILP-orange.svg)](https://developers.google.com/optimization)
 [![Tests](https://img.shields.io/badge/Tests-30%2F30%20Passing-brightgreen.svg)](tests/)
@@ -11,9 +10,9 @@
 
 ---
 
-## 👥 Engineering Team Credits
+## Engineering Team Credits
 
-Developed with pride for the BUP CSE Fest 2026 Preliminary Hackathon:
+Developed and engineered by:
 
 - **Pritam Biswas** — [GitHub Profile](https://github.com/pbs002-s) — *Core Architect & Backend Lead*
 - **Gajiul Islam** — [GitHub Profile](https://github.com/logic-forge119) — *Optimizer & Mathematical Modeling Lead*
@@ -22,24 +21,24 @@ Developed with pride for the BUP CSE Fest 2026 Preliminary Hackathon:
 
 ---
 
-## ⚡ Core Architectural Principle
+## Core Architectural Principle
 
 > **"The LLM interprets language; deterministic code validates intent; the mathematical optimizer makes the energy decision."**
 
 The LLM is **never** trusted to generate numerical schedules directly. Instead, PowerMind enforces an uncompromising zero-trust boundary:
 1. **Operator Language**: Natural-language notes (e.g. maintenance, guest lectures, feeder caps).
-2. **LLM Interpreter**: Provider-agnostic engine (Google Gemini, OpenAI, Groq, OpenRouter, or Deterministic Mock) converts notes into structured JSON.
+2. **LLM Interpreter**: Provider-agnostic engine (Google Gemini, OpenAI, Groq, OpenRouter, Local Trained ML, or Deterministic Mock) converts notes into structured JSON.
 3. **Deterministic Guardrails & Canonicalizer**: Validates types, ensures 1-to-1 sequential mapping, converts time ranges (inclusive start, exclusive end), applies percentage conversions, and builds mathematical constraints (`EffectiveScenario`).
 4. **Google OR-Tools MILP**: Solves the 24-hour campus energy schedule for minimal electricity cost while strictly enforcing energy balance, inverter rate limits, dynamic battery reserves, and **mandatory end-of-day battery neutrality** ($SOC_{23} = SOC_{\text{initial}}$).
 5. **Independent Replay Validator**: Evaluates 13 separate physical and policy invariants independently before returning any solution to the client.
 
 ---
 
-## 📊 Live Benchmark Performance
+## Live Benchmark Performance
 
 Measured locally using `scripts/benchmark.py` on 24-hour university campus scenarios:
 
-| Metric | Measured Value | Hackathon SLA Target | Status |
+| Metric | Measured Value | Production SLA Target | Status |
 | :--- | :--- | :--- | :--- |
 | **Success Rate** | **100.0%** (30/30) | $\ge 99.0\%$ | **PASS** |
 | **Throughput** | **84.17 req/sec** | $\ge 10\text{ req/s}$ | **PASS** |
@@ -50,7 +49,7 @@ Measured locally using `scripts/benchmark.py` on 24-hour university campus scena
 
 ---
 
-## 🚀 Quick Start (Local Setup)
+## Quick Start (Local Setup)
 
 ### 1. Prerequisites
 - Python 3.11 or Python 3.12
@@ -99,7 +98,7 @@ Open your browser at:
 
 ---
 
-## 🐳 Docker Production Deployment
+## Docker Production Deployment
 
 ### Build & Run Container
 ```bash
@@ -123,7 +122,7 @@ curl http://localhost:8000/health
 
 ---
 
-## 🧪 Comprehensive Verification Suite
+## Comprehensive Verification Suite
 
 Run all automated checks in one command:
 ```bash
@@ -146,7 +145,7 @@ python scripts/benchmark.py 50
 
 ---
 
-## 📡 API Contract Specification
+## API Contract Specification
 
 ### 1. `GET /health`
 - **Response**: HTTP 200
@@ -227,29 +226,31 @@ python scripts/benchmark.py 50
 
 ---
 
-## 🖥️ UI Dashboard Features
+## UI Dashboard Features
 
 1. **Model & API Key Configurator**: Users can choose their provider (Google Gemini, OpenAI, Groq, OpenRouter, or Mock) and input their API key directly in the web UI. Keys persist in browser storage.
 2. **Connectivity Latency Tester**: Instant test call to verify external API keys and measure provider round-trip time.
 3. **Pipeline Flow Indicator**: Clearly highlights where the LLM is used vs where deterministic math algorithms run.
 4. **Interactive 24-Hour Dispatch Chart**: Stacked visualization of Campus Demand, Solar Generation, Battery Charge/Discharge, and Grid Import.
 5. **Battery SOC Trajectory**: Visual confirmation of minimum reserves and end-of-day battery neutrality.
-6. **Data Export**: 1-click download of the complete response in JSON or CSV format.
+6. **Data Export**: 1-click download of the complete response in JSON or CSV format, plus Print/PDF report generation.
 7. **Team Credits Modal**: Direct links to all four engineers' GitHub profiles.
+8. **Inbuilt AI Energy Agent**: Natural language prompt execution for automated scenario formulation.
+9. **Interactive Chatbot**: Instant Q&A answering operator questions regarding schedules, battery dispatch, and tariffs.
 
 ---
 
-## 🎬 3-Minute Technical Demo Script
+## Technical Demo Script
 
 - **0:00 – 0:30 (The Problem)**: Fluctuating university tariffs, rooftop solar variability, and human operators communicating constraints in informal natural language.
 - **0:30 – 1:00 (The Architecture)**: Explaining why LLMs must never produce schedules directly, and how PowerMind pairs an LLM semantic layer with Google OR-Tools.
-- **1:00 – 1:40 (LLM & Guardrails)**: Showing note interpretation, inclusive-start/exclusive-end time parsing, factor extraction (e.g. "one fifth" or "80% reduction" $\to 0.2$), and bounded repair.
-- **1:40 – 2:20 (Live API & Dashboard Demo)**: Running the BUP campus benchmark scenario in the web dashboard; observing peak shaving and battery charge shifting.
+- **1:00 – 1:40 (LLM & Guardrails)**: Showing note interpretation, inclusive-start/exclusive-end time parsing, factor extraction (e.g. "one fifth" or "80% reduction" -> 0.2), and bounded repair.
+- **1:40 – 2:20 (Live API & Dashboard Demo)**: Running the smart campus benchmark scenario in the web dashboard; observing peak shaving and battery charge shifting.
 - **2:20 – 2:45 (Independent Replay Validator)**: Demonstrating how 13 physical invariants and end-of-day neutrality ($SOC_{23} = SOC_0$) are rigorously verified before returning HTTP 200.
 - **2:45 – 3:00 (Deployment & Wrap-up)**: Docker container reproducibility, sub-50ms latency, and final release certification.
 
 ---
 
-## 📜 License
-Developed for academic and competitive evaluation at BUP CSE Fest 2026.
+## License
+Production software engineered for Smart Campus Energy Optimization.
 All rights reserved by the engineering authors: Pritam Biswas, Gajiul Islam, Omar Shihab, and Sajjad Hossain Siam.
