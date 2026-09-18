@@ -2,7 +2,33 @@
   body {
     margin: 0;
     padding: 0;
+    background-color: #09090b;
+    color: #f4f4f5;
+    font-family: 'Plus Jakarta Sans', sans-serif;
   }
+}
+
+/* Glassmorphism and Card Utilities */
+.glass-panel {
+  background: rgba(18, 18, 23, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(39, 39, 42, 0.7);
+}
+
+.glass-panel-hover:hover {
+  border-color: rgba(52, 211, 153, 0.35);
+  box-shadow: 0 10px 30px -10px rgba(16, 185, 129, 0.12);
+}
+
+.gradient-border-emerald {
+  border: 1px solid rgba(16, 185, 129, 0.25);
+  box-shadow: 0 0 20px -5px rgba(16, 185, 129, 0.15);
+}
+
+.gradient-border-blue {
+  border: 1px solid rgba(59, 130, 246, 0.25);
+  box-shadow: 0 0 20px -5px rgba(59, 130, 246, 0.15);
 }
 
 /* Screen utility for print only elements */
@@ -15,7 +41,9 @@
   header,
   footer,
   button,
-  .no-print-area {
+  .no-print-area,
+  .chat-widget-container,
+  nav {
     display: none !important;
   }
 
@@ -26,7 +54,7 @@
   body {
     background: #ffffff !important;
     color: #0f172a !important;
-    font-size: 10.5pt;
+    font-size: 10pt;
   }
 
   .print-card {
@@ -44,16 +72,20 @@
   .text-slate-200,
   .text-slate-300,
   .text-slate-400,
-  .text-slate-500 {
+  .text-slate-500,
+  .text-zinc-400,
+  .text-zinc-300 {
     color: #334155 !important;
   }
 
-  .text-emerald-400 {
+  .text-emerald-400,
+  .text-emerald-500 {
     color: #047857 !important;
   }
 
-  .text-indigo-400 {
-    color: #4338ca !important;
+  .text-indigo-400,
+  .text-blue-500 {
+    color: #1d4ed8 !important;
   }
 
   table {
@@ -64,7 +96,8 @@
   th, td {
     border: 1px solid #cbd5e1 !important;
     color: #0f172a !important;
-    padding: 4px 8px !important;
+    padding: 4px 6px !important;
+    font-size: 9pt !important;
   }
 
   @page {
