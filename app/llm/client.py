@@ -311,6 +311,45 @@ class LocalTrainedLLMClient(BaseLLMClient):
 
         return json.dumps(output, indent=2)
 
+class AnthropicLLMClient(BaseLLMClient):
+    """Anthropic Claude client."""
+    async def generate(self, system_prompt: str, user_prompt: str) -> str:
+        if not self.api_key:
+            raise LLMClientError("Anthropic API key is not configured")
+
+        url = "https://api.anthropic.com/v1/messages"
+        payload = {
+            "model": self.model or "claude-3-5-sonnet-20241022",
+            "max_tokens": 1024,
+            "system": system_prompt,
+            "messages": [
+                {"role": "user", "content": user_prompt}
+            ],
+            "temperature": 0.0
+        }
+        headers = {
+            "x-api-key": self.api_key,
+            "anthropic-version": "2023-06-01",
+            "content-type": "application/json"
+        }
+
+        try:
+            async with httpx.AsyncClient(timeout=self.timeout) as client:
+                resp = await client.post(url, json=payload, headers=headers)
+                if resp.status_code != 200:
+                    raise LLMClientError(f"Anthropic API error ({resp.status_code}): {resp.text}")
+                data = resp.json()
+                content = data.get("content", [])
+                if not content:
+                    raise LLMClientError("No content returned by Anthropic API")
+                return content[0].get("text", "")
+        except httpx.TimeoutException:
+            raise LLMTimeoutError(f"Anthropic request timed out after {self.timeout}s")
+        except Exception as e:
+            if isinstance(e, (LLMClientError, LLMTimeoutError)):
+                raise
+            raise LLMClientError(f"Anthropic communication error: {str(e)}")
+
 def create_llm_client(
     provider: Optional[str] = None,
     model: Optional[str] = None,
@@ -332,7 +371,23 @@ def create_llm_client(
     if p == "mock" or not k or "your_" in k or "api_key_here" in k:
         return MockDeterministicLLMClient(model="mock-deterministic", api_key="", timeout=t)
 
-    if p in ("gemini", "google"):
+    # Key format auto-detection to prevent provider mismatches
+    if k.startswith("sk-ant-"):
+        p = "anthropic"
+        if not m.startswith("claude"):
+            m = "claude-3-5-sonnet-20241022"
+    elif k.startswith("gsk_") and p != "groq":
+        p = "groq"
+        if not m.startswith("llama") and not m.startswith("mixtral"):
+            m = "llama-3.3-70b-versatile"
+    elif k.startswith("sk-or-") and p != "openrouter":
+        p = "openrouter"
+
+    if p in ("anthropic", "claude"):
+        return AnthropicLLMClient(model=m or "claude-3-5-sonnet-20241022", api_key=k, timeout=t)
+    elif p in ("gemini", "google"):
+        if k.startswith("sk-"):
+            return OpenAICompatibleLLMClient(model="gpt-4o-mini", api_key=k, timeout=t)
         return GeminiLLMClient(model=m, api_key=k, timeout=t)
     elif p in ("groq",):
         return OpenAICompatibleLLMClient(

@@ -35,6 +35,10 @@ AVAILABLE_MODELS = {
         {"id": "anthropic/claude-3.5-sonnet", "name": "Claude 3.5 Sonnet", "recommended": False, "description": "Leading reasoning performance"},
         {"id": "deepseek/deepseek-chat", "name": "DeepSeek V3", "recommended": False, "description": "High performance open model"}
     ],
+    "anthropic": [
+        {"id": "claude-3-5-sonnet-20241022", "name": "Claude 3.5 Sonnet", "recommended": True, "description": "Advanced reasoning & guardrails"},
+        {"id": "claude-3-5-haiku-20241022", "name": "Claude 3.5 Haiku", "recommended": False, "description": "Ultra-fast intelligent responses"}
+    ],
     "mock": [
         {"id": "local-trained-model", "name": "Local Trained ML Model (Offline)", "recommended": True, "description": "Zero external dependencies, trained on campus cases"},
         {"id": "mock-deterministic", "name": "Deterministic Heuristic Engine", "recommended": False, "description": "Rule-based instant fallback"}
@@ -45,6 +49,28 @@ AVAILABLE_MODELS = {
 async def get_available_models() -> Dict[str, Any]:
     """Catalog of supported models and recommendations per provider."""
     return AVAILABLE_MODELS
+
+@router.get("/api/scenarios/cases")
+async def get_benchmark_cases() -> List[Dict[str, Any]]:
+    """Returns curated benchmark campus scenarios from the dataset."""
+    import os, json
+    cases_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "BUP_CSE_FEST_2026_Preli_Public_Sample_Cases.json")
+    if os.path.exists(cases_path):
+        try:
+            with open(cases_path, "r", encoding="utf-8") as f:
+                data = json.load(f)
+            cases = []
+            for c in data.get("cases", []):
+                cases.append({
+                    "id": c.get("id"),
+                    "label": c.get("label"),
+                    "rationale": c.get("rationale", ""),
+                    "input": c.get("input")
+                })
+            return cases
+        except Exception:
+            pass
+    return []
 
 @router.get("/health", response_model=HealthResponse)
 async def health_check() -> Dict[str, str]:
