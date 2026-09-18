@@ -17,13 +17,14 @@ FROM python:3.12-slim
 
 WORKDIR /app
 
-# Install curl for docker healthcheck
+# Install curl for Docker healthcheck
 RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Copy installed python packages from builder
+# Copy installed Python packages from builder
 COPY --from=builder /root/.local /root/.local
+
 ENV PATH=/root/.local/bin:$PATH
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
@@ -33,15 +34,7 @@ COPY app ./app
 COPY README.md ./README.md
 COPY scripts ./scripts
 
-# Copy application source code
-COPY app ./app
-COPY README.md ./README.md
-COPY scripts ./scripts
-
-# Expose canonical API port
-EXPOSE 8000
-
-# Expose canonical API port
+# Expose API port
 EXPOSE 8000
 
 # Health check
