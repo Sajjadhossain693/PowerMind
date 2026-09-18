@@ -1,0 +1,58 @@
+flowchart TD
+    subgraph Client["Client Interface"]
+        UI["PowerMind Modern UI\n(React + Tailwind + Chart.js)"]
+        API_REQ["POST /optimize-energy\n(JSON Scenario + Notes)"]
+    end
+
+    subgraph FastAPI["FastAPI Orchestration Layer"]
+        Health["GET /health"]
+        Router["Validation & Route Dispatch"]
+        Service["EnergyOptimizationService"]
+    end
+
+    subgraph LLM_Layer["LLM Intent Interpreter"]
+        PromptEngine["System & Dynamic Prompts"]
+        Provider["Provider Adapter\n(Gemini / OpenAI / Groq / Mock)"]
+        Parser["Strict JSON Schema Parser"]
+        Repair["Bounded Repair Engine\n(Max 1 retry)"]
+    end
+
+    subgraph Guardrail_Layer["Deterministic Guardrails & Canonicalizer"]
+        Val["Sequential Index & Type Checker"]
+        Guard["Semantic Non-Hallucination Barrier"]
+        Canon["CanonicalDirective Container"]
+        ScenarioGen["EffectiveScenario Builder"]
+    end
+
+    subgraph Math_Engine["Mathematical Optimization Engine"]
+        Solver["Google OR-Tools MILP Solver\n(SCIP / CBC / GLOP)"]
+        Objective["Objective: Minimize Grid Tariff Cost"]
+        Transitions["Battery Transition & End-of-Day Neutrality"]
+    end
+
+    subgraph Validation_Layer["Independent Verification Layer"]
+        Replay["Zero-Trust Replay Validator\n(13 Physical & Policy Invariants)"]
+        RepairCycle{"Replay Passed?"}
+        FallbackSolve["Bounded Numerical Re-solve"]
+    end
+
+    UI --> API_REQ
+    API_REQ --> Router
+    Router --> Service
+    Service --> PromptEngine
+    PromptEngine --> Provider
+    Provider --> Parser
+    Parser -- "Error" --> Repair
+    Repair --> Parser
+    Parser --> Val
+    Val --> Guard
+    Guard --> Canon
+    Canon --> ScenarioGen
+    ScenarioGen --> Solver
+    Solver --> Objective
+    Objective --> Transitions
+    Transitions --> Replay
+    Replay --> RepairCycle
+    RepairCycle -- "Yes" --> UI
+    RepairCycle -- "No" --> FallbackSolve
+    FallbackSolve --> Replay
