@@ -33,8 +33,13 @@ COPY app ./app
 COPY README.md ./README.md
 COPY scripts ./scripts
 
-# Optional static frontend dist if pre-built
-COPY frontend/dist ./frontend/dist
+# Copy application source code
+COPY app ./app
+COPY README.md ./README.md
+COPY scripts ./scripts
+
+# Expose canonical API port
+EXPOSE 8000
 
 # Expose canonical API port
 EXPOSE 8000
